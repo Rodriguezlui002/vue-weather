@@ -1,6 +1,6 @@
 <template>
-  <div class="w-full">
-    <div class="mx-auto w-1/3 flex flex-col items-center text-center">
+  <div class="w-full mb-10">
+    <div class="mx-auto w-1/3 flex flex-col items-center text-center mb-10">
       <h3 class="text-xl">Hello World!</h3>
       <h1 class="whitespace-nowrap">Get your weather information here</h1>
 
@@ -18,16 +18,30 @@
         </form>
       </div>
 
-      <TodayWeather v-if="showDash" :city="city" :currTemp="currTemp" :low="low" :high="high" />
+      <TodayWeather v-if="showDash" :city="city" :currTemp="currTemp" :low="low" :high="high" :date="date" />
+    </div>
+    <div>
+      <h3 class="text-xl text-center">And here's how the rest of your week looks.</h3>
+      <div class="flex flex-wrap justify-center mx-3">
+        <OtherWeather v-if="showDash" />
+        <OtherWeather v-if="showDash" />
+        <OtherWeather v-if="showDash" />
+        <OtherWeather v-if="showDash" />
+        <OtherWeather v-if="showDash" />
+        <OtherWeather v-if="showDash" />
+        <OtherWeather v-if="showDash" />
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import TodayWeather from './components/TodayWeather.vue';
+import OtherWeather from './components/OtherWeather.vue';
 export default {
   components: {
-    TodayWeather
+    TodayWeather,
+    OtherWeather
   },
   data() {
     return {
@@ -37,13 +51,14 @@ export default {
       CurrTemp: '',
       low: '',
       high: '',
-      weekly: {}
+      date: '',
+      weekly: []
     }
   },
   methods: {
     getElWeather() {
       let vm = this;
-      const myKey = 'niceTry';
+      const myKey = import.meta.env.VITE_API_KEY;
       fetch(`https://api.openweathermap.org/data/2.5/weather?q=${this.location}&units=imperial&appid=${myKey}`)  
       .then(res => res.json())
       .then(data => {
@@ -51,22 +66,30 @@ export default {
         vm.currTemp = data.main.temp;
         vm.low = data.main.temp_min;
         vm.high = data.main.temp_max;
-        console.log(data);
+        // console.log(data);
         let lon = data.coord.lon;
         let lat = data.coord.lat;
         vm.showDash = true;
         let time = new Date(data.dt * 1000);
-        console.log(time.toDateString());
+        vm.date = time.toDateString();
         
         fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&units=imperial&appid=${myKey}`)
         .then(res =>res.json())
         .then(data => {
-          console.log(data);
+          // console.log(data);
           const week = data.daily;
           console.log(week);
           for (const el of week) {
-            console.log(el);
+            const obj = {};
+            // console.log(el);
+            let date = new Date(el.dt *1000);
+            // console.log(date.toDateString());
+            obj.date = date.toDateString();
+            obj.low = el.temp.min;
+            obj.high = el.temp.max;
+            vm.weekly.push(obj);
           }
+          console.log(vm.weekly);
         })
         .catch(err => console.log(err));
       })
