@@ -9,7 +9,7 @@
         <h2 class="text-3xl">Enter Location</h2>
         <form v-on:submit.prevent="getElWeather" class="w-full">
             <div class="flex items-center py-1 border-b border-blue-600">
-                <input class="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none" v-model="location" type="text" placeholder="Ellensburg, WA">
+                <input class="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none" v-model="location" type="text" placeholder="Seattle">
                 <button class="bg-blue-600 px-4 py-1 text-gray-200">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -74,6 +74,7 @@ export default {
         .then(res =>res.json())
         .then(data => {
           // console.log(data);
+          vm.weekly = [];
           const week = data.daily;
           console.log(week);
           for (const el of week) {
